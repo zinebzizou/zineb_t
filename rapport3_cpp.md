@@ -61,12 +61,14 @@ public slots:
     void newDigit();
     void changeOperation();//slot to handle the click on operations
     void EnterButton();
+    void reset();
     
    
 private:
     int *left;
     int *right;
     QString *operation=nullptr;
+    int *out;
     
 protected:
 //function to create widgets
@@ -98,11 +100,19 @@ calculator ::calculator(QWidget *parent):QWidget(parent){
     createWidgets();
     placeWidgets();
     makeConnexions();
+    left=nullptr;
+    right=nullptr;
+    operation=nullptr;
+    out=new int{(0)};
 }
 calculator:: ~calculator(){
     delete disp;
     delete layout;
     delete buttonLayout;
+    delete left;
+    delete right;
+    delete operation;
+    delete out ;
 }
 
 void calculator::createWidgets(){
@@ -186,9 +196,13 @@ void calculator::newDigit(){
 
 void calculator::makeConnexions(){
 
-    //connexting the digits
-    for (int i=0;i<10;i++)
-        connect(digits[i],&QPushButton::clicked,this, &calculator::newDigit);
+    //Connecting the digits
+     for(int i=0; i <10; i++)
+         connect(digits[i], &QPushButton::clicked,this, &Calculator::newDigit);
+     for(auto j=0; j<4; j++)
+           connect(operations[j], SIGNAL(clicked()), this, SLOT(changeOperation()));
+     connect(enter, SIGNAL(clicked()), this, SLOT(EnterButton()));
+     connect(reset, SIGNAL(clicked()), this, SLOT(Reset()));
 }
 
 
@@ -212,6 +226,18 @@ void calculator::enterButton(){
         disp->display((*right)/(*left));
     }
 }
+void Calculator::Reset(){
+
+    disp->display(0);
+    delete  left;
+    left=nullptr;
+    delete right;
+    right=nullptr;
+    delete operation;
+    operation =nullptr;
+    delete out ;
+
+}
 
 void calculator:: KeyPressEvent(QKeyEvent *e){
     if (e->key== Qt::Key_Escape)
@@ -232,12 +258,12 @@ void calculator:: KeyPressEvent(QKeyEvent *e){
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Calculator w;
-    w.setWindowTitle("Calculator");
-    w.resize(500,500);
-    w.show();
+    Calculator *w=new Calculator;
+    w->setWindowTitle("Calculator");
+    w->resize(500,500);
+    w->show();
     return a.exec();
-} 
+}
 ``` 
   * ###     <span style="color:grey">Results  </span>
 
